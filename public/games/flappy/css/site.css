@@ -1,0 +1,354 @@
+/* ── Flappy Bird – Ginix Arcade ── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #000000;
+    font-family: 'Press Start 2P', monospace;
+}
+
+
+/* Full-screen game container */
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+}
+
+canvas {
+    display: block;
+    margin: auto;
+    box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
+    image-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Enhanced Customizer overlay */
+.customizer {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 100;
+    pointer-events: auto;
+    max-width: calc(100vw - 32px);
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .customizer {
+        top: 12px;
+        left: 12px;
+        right: 12px;
+    }
+}
+
+.customizer__toggle {
+    font-family: inherit;
+    font-size: 11px;
+    padding: 12px 18px;
+    border: 2px solid rgba(255, 107, 255, 0.6);
+    border-radius: 12px;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+@media (max-width: 768px) {
+    .customizer__toggle {
+        font-size: 10px;
+        padding: 10px 16px;
+        min-height: 44px;
+    }
+}
+
+.customizer__toggle:hover {
+    background: linear-gradient(135deg, rgba(118, 75, 162, 0.95), rgba(240, 147, 251, 0.95));
+    border-color: rgba(240, 147, 251, 0.8);
+    box-shadow: 0 6px 20px rgba(240, 147, 251, 0.6);
+    transform: translateY(-2px);
+}
+
+.customizer__panel {
+    margin-top: 12px;
+    padding: 16px;
+    width: 320px;
+    max-width: calc(100vw - 32px);
+    border-radius: 16px;
+    border: 2px solid rgba(240, 147, 251, 0.5);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.95), rgba(118, 75, 162, 0.95));
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(240, 147, 251, 0.3);
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .customizer__panel {
+        width: calc(100vw - 32px);
+        padding: 12px;
+        max-height: calc(100vh - 80px);
+    }
+}
+
+.customizer__section {
+    margin-bottom: 16px;
+}
+
+.customizer__section:last-child {
+    margin-bottom: 0;
+}
+
+.customizer__title {
+    font-size: 10px;
+    color: #fff;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.customizer__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 8px;
+}
+
+.customizer__option {
+    aspect-ratio: 1;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    min-height: 60px;
+}
+
+@media (max-width: 768px) {
+    .customizer__option {
+        min-height: 50px;
+    }
+}
+
+.customizer__option:hover {
+    border-color: rgba(240, 147, 251, 0.8);
+    box-shadow: 0 0 15px rgba(240, 147, 251, 0.6);
+    transform: scale(1.05);
+}
+
+.customizer__option.active {
+    border-color: #f093fb;
+    box-shadow: 0 0 20px rgba(240, 147, 251, 0.8), inset 0 0 10px rgba(240, 147, 251, 0.3);
+}
+
+.customizer__option.active::after {
+    content: '✓';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #f093fb, #4facfe);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(240, 147, 251, 0.8);
+}
+
+.customizer__bird-option,
+.customizer__pipe-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20, 20, 40, 0.8);
+}
+
+.customizer__bird-option img,
+.customizer__pipe-option img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+}
+
+.customizer__action {
+    width: 100%;
+    font-family: inherit;
+    font-size: 10px;
+    padding: 10px 10px;
+    margin: 8px 0;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(10, 10, 26, 0.9);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.customizer__action:hover {
+    background: rgba(20, 20, 40, 0.9);
+    border-color: rgba(0, 255, 255, 0.4);
+}
+
+.customizer__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.customizer__label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.customizer__select {
+    font-family: inherit;
+    font-size: 10px;
+    width: 120px;
+    padding: 6px 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(10, 10, 26, 0.9);
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .customizer {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+    }
+
+    .customizer__toggle {
+        font-size: 10px;
+        padding: 10px 14px;
+    }
+
+    .customizer__panel {
+        width: 100%;
+        max-width: calc(100vw - 16px);
+        padding: 12px;
+    }
+
+    .customizer__grid {
+        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+        gap: 6px;
+    }
+
+    .customizer__title {
+        font-size: 9px;
+        margin-bottom: 8px;
+    }
+
+    .customizer__section {
+        margin-bottom: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .customizer__toggle {
+        font-size: 9px;
+        padding: 8px 12px;
+    }
+
+    .customizer__panel {
+        padding: 10px;
+    }
+
+    .customizer__grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+    }
+
+    .customizer__title {
+        font-size: 8px;
+    }
+}
+
+/* ── Mobile: move customizer to bottom so it never blocks gameplay ── */
+@media (max-width: 480px) {
+    .customizer {
+        top: auto;
+        bottom: 16px;
+        left: 16px;
+        right: auto;
+        flex-direction: column-reverse;
+    }
+
+    .customizer__panel {
+        margin-top: 0;
+        margin-bottom: 10px;
+        width: calc(100vw - 32px);
+        max-height: 55vh;
+    }
+}
+
+/* Landscape mobile optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+    .customizer {
+        top: 4px;
+        left: 4px;
+    }
+
+    .customizer__toggle {
+        font-size: 8px;
+        padding: 6px 10px;
+    }
+
+    .customizer__panel {
+        max-height: calc(100vh - 50px);
+        overflow-y: auto;
+        padding: 8px;
+    }
+
+    .customizer__grid {
+        gap: 4px;
+    }
+
+    .customizer__section {
+        margin-bottom: 8px;
+    }
+}

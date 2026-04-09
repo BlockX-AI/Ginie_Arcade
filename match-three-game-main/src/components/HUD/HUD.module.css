@@ -1,0 +1,176 @@
+.hudContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.hudContainer > * {
+  pointer-events: auto;
+}
+
+.leftSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.centerSection {
+  display: flex;
+  align-items: center;
+}
+
+.rightSection {
+  display: flex;
+  align-items: flex-start;
+}
+
+.scoreContainer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  min-width: 150px;
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 2px;
+  margin-bottom: 0.3rem;
+}
+
+.scoreValue {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.comboContainer {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(245, 87, 108, 0.4);
+}
+
+.comboText {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.timerContainer {
+  background: white;
+  padding: 1rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 4px solid #2ed573;
+  transition: border-color 0.3s ease;
+  text-align: center;
+}
+
+.timerLabel {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #666;
+  letter-spacing: 2px;
+  margin-bottom: 0.3rem;
+}
+
+.timerValue {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2ed573;
+  transition: color 0.3s ease;
+}
+
+.targetContainer {
+  margin: 0.5rem 0;
+  width: 100%;
+}
+
+.targetLabel {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.3rem;
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 0.3rem;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+  transition: width 0.3s ease;
+}
+
+.muteButton {
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.muteButton:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .hudContainer {
+    padding: 1rem;
+  }
+
+  .scoreContainer {
+    padding: 0.8rem 1.2rem;
+    min-width: 120px;
+  }
+
+  .scoreValue {
+    font-size: 2rem;
+  }
+
+  .timerContainer {
+    padding: 0.8rem 1.5rem;
+  }
+
+  .timerValue {
+    font-size: 2rem;
+  }
+
+  .muteButton {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  .comboText {
+    font-size: 1rem;
+  }
+}

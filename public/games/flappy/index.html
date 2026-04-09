@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird – Ginix Arcade</title>
+    <meta name="description"
+        content="Play Flappy Bird on Ginix Arcade! Tap to fly, dodge the pillars and beat your high score!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="css/site.css">
+    <script src="/games/ginix-bridge.js"></script>
+</head>
+
+<body>
+    <div id="customizer" class="customizer" aria-label="Customizer">
+        <button id="customizer-toggle" class="customizer__toggle" type="button">🎨 Customize</button>
+        <div id="customizer-panel" class="customizer__panel" hidden>
+            <div class="customizer__section">
+                <div class="customizer__title">🌌 Backgrounds</div>
+                <div id="bg-grid" class="customizer__grid"></div>
+            </div>
+            <div class="customizer__section">
+                <div class="customizer__title">🐦 Birds</div>
+                <div id="bird-grid" class="customizer__grid"></div>
+            </div>
+            <div class="customizer__section">
+                <div class="customizer__title">🏛️ Pillars</div>
+                <div id="pipe-grid" class="customizer__grid"></div>
+            </div>
+        </div>
+    </div>
+    <div id="game-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script src="js/game.js"></script>
+    <script>
+        (function () {
+            const toggleBtn = document.getElementById('customizer-toggle')
+            const panel = document.getElementById('customizer-panel')
+            const bgGrid = document.getElementById('bg-grid')
+            const birdGrid = document.getElementById('bird-grid')
+            const pipeGrid = document.getElementById('pipe-grid')
+
+            toggleBtn.addEventListener('click', () => {
+                panel.hidden = !panel.hidden
+            })
+
+            function tryInit() {
+                if (!window.FlappyCustomizer) return false
+
+                const bgOptions = window.FlappyCustomizer.getBackgroundOptions()
+                const birdOptions = window.FlappyCustomizer.getBirdOptions()
+                const pipeOptions = window.FlappyCustomizer.getPipeOptions()
+
+                function updateActiveStates() {
+                    const currentBg = window.FlappyCustomizer.getCurrentBackgroundIndex()
+                    const currentBird = window.FlappyCustomizer.getCurrentBirdSkinKey()
+                    const currentPipe = window.FlappyCustomizer.getCurrentPipeKey()
+
+                    document.querySelectorAll('.customizer__option').forEach(el => {
+                        el.classList.remove('active')
+                    })
+
+                    const activeBg = document.querySelector(`[data-bg-index="${currentBg}"]`)
+                    if (activeBg) activeBg.classList.add('active')
+
+                    const activeBird = document.querySelector(`[data-bird-key="${currentBird}"]`)
+                    if (activeBird) activeBird.classList.add('active')
+
+                    const activePipe = document.querySelector(`[data-pipe-key="${currentPipe}"]`)
+                    if (activePipe) activePipe.classList.add('active')
+                }
+
+                bgOptions.forEach((bg, index) => {
+                    const option = document.createElement('div')
+                    option.className = 'customizer__option'
+                    option.setAttribute('data-bg-index', index)
+                    option.style.backgroundImage = `url('assets1/image copy ${index + 4}.png')`
+                    option.addEventListener('click', () => {
+                        window.FlappyCustomizer.setBackgroundIndex(index)
+                        updateActiveStates()
+                    })
+                    bgGrid.appendChild(option)
+                })
+
+                birdOptions.forEach((birdKey, index) => {
+                    const option = document.createElement('div')
+                    option.className = 'customizer__option customizer__bird-option'
+                    option.setAttribute('data-bird-key', birdKey)
+                    const img = document.createElement('img')
+                    const birdFiles = ['BIRD.png', 'BIRD1.png', 'BIRD4.png']
+                    img.src = `assets1/${birdFiles[index]}`
+                    option.appendChild(img)
+                    option.addEventListener('click', () => {
+                        window.FlappyCustomizer.setBirdSkinKey(birdKey)
+                        updateActiveStates()
+                    })
+                    birdGrid.appendChild(option)
+                })
+
+                pipeOptions.forEach((pipeKey, index) => {
+                    const option = document.createElement('div')
+                    option.className = 'customizer__option customizer__pipe-option'
+                    option.setAttribute('data-pipe-key', pipeKey)
+                    const img = document.createElement('img')
+                    img.src = `assets1/PILLAR${index === 0 ? '' : index}.png`
+                    option.appendChild(img)
+                    option.addEventListener('click', () => {
+                        window.FlappyCustomizer.setPipeKey(pipeKey)
+                        updateActiveStates()
+                    })
+                    pipeGrid.appendChild(option)
+                })
+
+                updateActiveStates()
+
+                return true
+            }
+
+            const t = setInterval(() => {
+                if (tryInit()) clearInterval(t)
+            }, 50)
+        })();
+    </script>
+</body>
+
+</html>

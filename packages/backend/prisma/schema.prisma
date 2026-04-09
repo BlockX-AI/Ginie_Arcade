@@ -1,0 +1,116 @@
+// Ginix Arcade Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  walletAddress  String   @id @map("wallet_address")
+  xp             Int      @default(0)
+  sessionsPlayed Int      @default(0) @map("sessions_played")
+  createdAt      DateTime @default(now()) @map("created_at")
+  
+  sessions       Session[]
+  scores         Leaderboard[]
+  quests         PlayerQuest[]
+  achievements   Achievement[]
+
+  @@map("players")
+}
+
+model Session {
+  id            String   @id @default(uuid())
+  walletAddress String   @map("wallet_address")
+  gameId        String   @map("game_id")
+  nonce         String   @unique
+  startedAt     DateTime @map("started_at")
+  endedAt       DateTime? @map("ended_at")
+  score         Int?
+  duration      Int?     // seconds
+  valid         Boolean  @default(true)
+  
+  player        Player   @relation(fields: [walletAddress], references: [walletAddress])
+
+  @@index([walletAddress])
+  @@index([gameId])
+  @@map("sessions")
+}
+
+model Leaderboard {
+  id            Int      @id @default(autoincrement())
+  gameId        String   @map("game_id")
+  walletAddress String   @map("wallet_address")
+  score         Int
+  duration      Int      // seconds
+  createdAt     DateTime @default(now()) @map("created_at")
+  
+  player        Player   @relation(fields: [walletAddress], references: [walletAddress])
+
+  @@unique([gameId, walletAddress])
+  @@index([gameId, score(sort: Desc)])
+  @@map("leaderboard")
+}
+
+model Quest {
+  id                String  @id
+  name              String
+  description       String
+  xpReward          Int     @map("xp_reward")
+  requirementType   String  @map("requirement_type") // 'play_games', 'reach_score', 'daily_login'
+  requirementValue  Int     @map("requirement_value")
+  active            Boolean @default(true)
+  
+  playerQuests      PlayerQuest[]
+
+  @@map("quests")
+}
+
+model PlayerQuest {
+  walletAddress String   @map("wallet_address")
+  questId       String   @map("quest_id")
+  progress      Int      @default(0)
+  completed     Boolean  @default(false)
+  completedAt   DateTime? @map("completed_at")
+  
+  player        Player   @relation(fields: [walletAddress], references: [walletAddress])
+  quest         Quest    @relation(fields: [questId], references: [id])
+  
+  @@id([walletAddress, questId])
+  @@map("player_quests")
+}
+
+model Achievement {
+  id            Int      @id @default(autoincrement())
+  walletAddress String   @map("wallet_address")
+  gameId        String   @map("game_id")
+  type          String   // 'NEON_BADGE', 'SKY_MASTER', etc.
+  rewardId      String   @map("reward_id")
+  score         Int?
+  txHash        String?  @map("tx_hash")
+  mintedAt      DateTime @default(now()) @map("minted_at")
+  
+  player        Player   @relation(fields: [walletAddress], references: [walletAddress])
+
+  @@index([walletAddress])
+  @@index([gameId])
+  @@map("achievements")
+}
+
+model GameConfig {
+  gameId            String  @id @map("game_id")
+  name              String
+  slug              String  @unique
+  description       String
+  category          String
+  maxScore          Int     @map("max_score")
+  minDuration       Int     @map("min_duration")
+  maxScorePerSecond Int     @map("max_score_per_second")
+  active            Boolean @default(true)
+  
+  @@map("game_config")
+}

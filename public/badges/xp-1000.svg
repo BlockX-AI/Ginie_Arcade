@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#B8860B;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="95" fill="url(#bg)" stroke="#FFF8DC" stroke-width="3"/>
+  <text x="100" y="90" text-anchor="middle" font-size="60" fill="white">&#x1F3C6;</text>
+  <text x="100" y="130" text-anchor="middle" font-size="14" font-weight="bold" fill="white" font-family="Arial">XP Master</text>
+  <text x="100" y="150" text-anchor="middle" font-size="10" fill="#FFF8DC" font-family="Arial">Earn 1,000 XP</text>
+  <text x="100" y="180" text-anchor="middle" font-size="10" fill="#FFF8DC" font-family="Arial">GOLD</text>
+</svg>

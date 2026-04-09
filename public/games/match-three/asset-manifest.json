@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/games/match-three/static/css/main.7cc421e7.css",
+    "main.js": "/games/match-three/static/js/main.52f19d84.js",
+    "static/js/787.c70dd466.chunk.js": "/games/match-three/static/js/787.c70dd466.chunk.js",
+    "index.html": "/games/match-three/index.html",
+    "main.7cc421e7.css.map": "/games/match-three/static/css/main.7cc421e7.css.map",
+    "main.52f19d84.js.map": "/games/match-three/static/js/main.52f19d84.js.map",
+    "787.c70dd466.chunk.js.map": "/games/match-three/static/js/787.c70dd466.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7cc421e7.css",
+    "static/js/main.52f19d84.js"
+  ]
+}

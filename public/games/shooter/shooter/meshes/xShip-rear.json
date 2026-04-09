@@ -1,0 +1,32 @@
+{
+    "name":"Cube.002Geometry.2",
+    "metadata":{
+        "type":"Geometry",
+        "vertices":4,
+        "materials":1,
+        "generator":"io_three",
+        "version":3,
+        "faces":1,
+        "normals":1
+    },
+    "materials":[{
+        "colorDiffuse":[0.004243,1,1],
+        "depthTest":true,
+        "colorEmissive":[0.008485,2,2],
+        "blending":"NormalBlending",
+        "visible":true,
+        "specularCoef":50,
+        "depthWrite":true,
+        "transparent":false,
+        "DbgName":"blue",
+        "DbgIndex":0,
+        "colorSpecular":[0.5,0.5,0.5],
+        "opacity":1,
+        "wireframe":false,
+        "DbgColor":15658734,
+        "shading":"phong"
+    }],
+    "vertices":[-0.289371,-0.035423,0.196453,0,-0.035423,0.196453,0.289371,-0.035423,0.196453,0,-0.305417,0.196453],
+    "faces":[35,1,0,3,2,0,0,0,0,0],
+    "normals":[0,1,0]
+}

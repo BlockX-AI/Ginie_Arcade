@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Snake.io - Multiplayer Snake Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+        
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        #start-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        #player-name {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        #player-name:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        #start-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        #start-button:hover {
+            transform: scale(1.05);
+        }
+        
+        #start-button:active {
+            transform: scale(0.95);
+        }
+        
+        .game-info {
+            margin-top: 20px;
+            color: #666;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .controls {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        
+        .controls strong {
+            color: #667eea;
+        }
+        
+        #game-container {
+            display: none;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        #leaderboard {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            z-index: 100;
+            min-width: 200px;
+        }
+        
+        #leaderboard h3 {
+            margin-bottom: 10px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+        
+        .leader-entry {
+            padding: 5px 0;
+            font-size: 14px;
+        }
+        
+        .leader-entry.player {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        #minimap {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            z-index: 100;
+        }
+        
+        #score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div id="start-screen">
+        <div id="start-container">
+            <h1>🐍 Snake.io</h1>
+            <p class="subtitle">Multiplayer Snake Arena</p>
+            
+            <input 
+                type="text" 
+                id="player-name" 
+                placeholder="Enter your name..." 
+                maxlength="15"
+                autofocus
+            />
+            
+            <button id="start-button">Start Game</button>
+            
+            <div class="game-info">
+                <p><strong>Eat food to grow bigger!</strong></p>
+                <p>Trap other snakes by making them crash into you</p>
+            </div>
+            
+            <div class="controls">
+                <p><strong>Controls:</strong></p>
+                <p>🖱️ Mouse - Move snake</p>
+                <p>⬆️ Arrow Keys - Alternative controls</p>
+                <p>⏫ Spacebar - Speed boost</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game Container -->
+    <div id="game-container"></div>
+    
+    <!-- Leaderboard -->
+    <div id="leaderboard" style="display: none;">
+        <h3>🏆 Leaderboard</h3>
+        <div id="leaderboard-list"></div>
+    </div>
+    
+    <!-- Minimap -->
+    <canvas id="minimap" width="150" height="150" style="display: none;"></canvas>
+    
+    <!-- Score -->
+    <div id="score" style="display: none;">
+        Length: <span id="score-value">30</span>
+    </div>
+    
+    <!-- Load Ginix Bridge for blockchain integration -->
+    <script src="/games/ginix-bridge.js"></script>
+    
+    <!-- Load Phaser and game scripts -->
+    <script src="lib/phaser.min.js"></script>
+    <script src="src/util.js"></script>
+    <script src="src/shadow.js"></script>
+    <script src="src/eye.js"></script>
+    <script src="src/eyePair.js"></script>
+    <script src="src/food.js"></script>
+    <script src="src/snake.js"></script>
+    <script src="src/playerSnake.js"></script>
+    <script src="src/botSnake.js"></script>
+    <script src="src/game.js"></script>
+    <script src="src/main.js"></script>
+</body>
+</html>

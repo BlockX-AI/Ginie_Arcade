@@ -1,0 +1,596 @@
+.container {
+  width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.topHud {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.leftStats,
+.rightStats {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.backBtn,
+.restartBtn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.backBtn:hover,
+.restartBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.restartBtn {
+  font-size: 20px;
+  padding: 8px 14px;
+}
+
+.statBox {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 8px 16px;
+  text-align: center;
+}
+
+.statLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.statValue {
+  font-size: 24px;
+  font-weight: 900;
+  color: white;
+}
+
+.centerScore {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 12px 24px;
+  text-align: center;
+  flex: 1;
+  max-width: 300px;
+}
+
+.scoreLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.scoreValue {
+  font-size: 32px;
+  font-weight: 900;
+  color: #FFD93D;
+  text-shadow: 0 2px 8px rgba(255, 217, 61, 0.5);
+}
+
+.levelProgress {
+  margin-top: 8px;
+}
+
+.progressLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 4px;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ECDC4, #FFD93D);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.boardContainer {
+  position: relative;
+  width: 440px;
+  height: 440px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 3px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.boardRow {
+  display: flex;
+}
+
+.cell {
+  width: 48px;
+  height: 48px;
+  margin: 3px;
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.specialH::after,
+.specialV::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0.95;
+  mix-blend-mode: screen;
+}
+
+.specialH::after {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.85) 0px,
+    rgba(255, 255, 255, 0.85) 4px,
+    rgba(255, 255, 255, 0.05) 4px,
+    rgba(255, 255, 255, 0.05) 9px
+  );
+}
+
+.specialV::after {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.85) 0px,
+    rgba(255, 255, 255, 0.85) 4px,
+    rgba(255, 255, 255, 0.05) 4px,
+    rgba(255, 255, 255, 0.05) 9px
+  );
+}
+
+.cell:hover {
+  transform: scale(1.08);
+}
+
+.cell.busy {
+  pointer-events: none;
+}
+
+.cellShine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+  border-radius: 12px 12px 0 0;
+  pointer-events: none;
+}
+
+.tileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: particleBurst 0.8s ease-out forwards;
+}
+
+@keyframes particleBurst {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes litPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.3);
+  }
+}
+
+@keyframes hintPulse {
+  0%, 100% {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+  }
+  50% {
+    transform: scale(1.15);
+    filter: brightness(1.5);
+  }
+}
+
+.toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.toastEmoji {
+  font-size: 32px;
+}
+
+.toastText {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(8px);
+}
+
+.modalBox {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5);
+}
+
+.modalEmoji {
+  font-size: 80px;
+  margin-bottom: 16px;
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.modalTitle {
+  font-size: 36px;
+  font-weight: 900;
+  background: linear-gradient(180deg, #FFD93D, #FF6B9D);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+
+.modalInfo {
+  color: white;
+  font-size: 16px;
+  margin-bottom: 24px;
+  line-height: 1.8;
+}
+
+.modalInfo p {
+  margin: 8px 0;
+}
+
+.startBtn,
+.nextBtn,
+.playAgainBtn,
+.retryBtn {
+  background: linear-gradient(135deg, #FFD93D, #FF6B9D);
+  border: none;
+  color: white;
+  padding: 16px 48px;
+  border-radius: 16px;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.4);
+  text-transform: uppercase;
+}
+
+.startBtn:hover,
+.nextBtn:hover,
+.playAgainBtn:hover,
+.retryBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 24px rgba(255, 107, 157, 0.6);
+}
+
+.finalScore {
+  color: white;
+  font-size: 20px;
+  margin: 20px 0;
+}
+
+.finalScore span {
+  font-size: 32px;
+  font-weight: 900;
+  color: #FFD93D;
+}
+
+.levelDescription {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  margin: 16px 0;
+  font-style: italic;
+}
+
+.congratsText {
+  color: white;
+  font-size: 18px;
+  margin: 20px 0;
+  line-height: 1.6;
+}
+
+.gameOverText {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 18px;
+  margin: 16px 0;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.nextBtn {
+  background: linear-gradient(135deg, #4ECDC4, #A55EEA);
+}
+
+.retryBtn {
+  background: linear-gradient(135deg, #FF9F43, #FF6B9D);
+  font-size: 18px;
+  padding: 12px 32px;
+}
+
+.menuBtnSmall {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menuBtnSmall:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.menuBox {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5);
+}
+
+.menuTitle {
+  font-size: 32px;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 24px;
+}
+
+.levelGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.levelBtn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.levelBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.levelBtn:disabled {
+  cursor: not-allowed;
+}
+
+.levelNumber {
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+
+.levelMoves {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.closeMenuBtn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 12px 32px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.closeMenuBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.hintCell {
+  position: relative;
+}
+
+.hintArrow {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  animation: bounce 0.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.specialIcon {
+  position: absolute;
+  right: 6px;
+  bottom: 4px;
+  font-size: 16px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+}
+
+.hintPopup {
+  position: fixed;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #FFD93D, #FF9F43);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(255, 159, 67, 0.5);
+  z-index: 1500;
+}
+
+.comboBlastOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+  pointer-events: none;
+}
+
+.comboBlastText {
+  font-size: 48px;
+  font-weight: 900;
+  color: #FFD93D;
+  text-shadow: 0 0 20px rgba(255, 217, 61, 0.8),
+               0 0 40px rgba(255, 217, 61, 0.6),
+               0 4px 8px rgba(0, 0, 0, 0.5);
+  animation: comboBlastAnim 1.5s ease-out;
+}
+
+@keyframes comboBlastAnim {
+  0% {
+    transform: scale(0) rotate(-10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.lockedLevel {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(100, 100, 100, 0.2) !important;
+}
+
+.lockedLevel:hover {
+  background: rgba(100, 100, 100, 0.2) !important;
+  transform: none !important;
+}
+
+.lockIcon {
+  font-size: 28px;
+  margin-bottom: 4px;
+}

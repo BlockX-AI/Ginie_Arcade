@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "lib": ["es6", "dom"],
+    "target": "es5",
+    "moduleResolution": "node",
+    "module": "commonjs"
+  },
+  "exclude": [
+    "__tests__",
+    "__mocks__",
+    "node_modules"
+  ]
+}

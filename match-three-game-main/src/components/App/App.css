@@ -1,0 +1,28 @@
+.App {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .App {
+    background-size: cover;
+    padding: 1rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .App {
+    padding: 0.5rem 0;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .App {
+    padding: 0.5rem 0;
+    overflow-y: auto;
+  }
+}
