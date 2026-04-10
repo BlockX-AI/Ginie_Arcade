@@ -1,5 +1,0 @@
-{
-	"Scene": "res://assets/plugins/shared/world/background_sprite/background_sprite.tscn",
-	"Background": "res://assets/game/background/background.png",
-	"BlurScale" : 2
-}

@@ -1,8 +1,0 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-npm lint-stage
-
-
-# npm run eslint
-# git add -A

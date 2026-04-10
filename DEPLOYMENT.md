@@ -52,11 +52,7 @@ npm install
 #   BACKEND_SIGNER_KEY=<your_wallet_private_key>
 #   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=<from cloud.walletconnect.com>
 
-# 3. Build match-three game (if not done)
-cd match-three-game-main && npm install && npm run build
-cp -r build/ ../public/games/match-three/
-
-# 4. Start dev server
+# 3. Start dev server
 npm run dev
 ```
 
@@ -168,7 +164,7 @@ Browser
 
 Games (static, served from /public/games/)
   ├── flappy            Phaser 3 game
-  ├── match-three       React CRA game (rebuilt from match-three-game-main/)
+  ├── match-three       Puzzle game build
   ├── snake-io          HTML5 game
   ├── sudoku            HTML5 game
   ├── zombie-apocalypse HTML5 game

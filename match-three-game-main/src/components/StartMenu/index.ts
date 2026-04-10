@@ -1,1 +1,0 @@
-export { StartMenu } from "./StartMenu";
