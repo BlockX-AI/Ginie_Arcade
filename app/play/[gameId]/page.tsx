@@ -9,11 +9,6 @@ import { CONTRACTS, REWARD_ABI, gameIdToBytes32, rewardIdToBytes32 } from '@/lib
 import { isAddress } from 'viem';
 
 const GAME_CONFIG: Record<string, { name: string; url: string; icon: string }> = {
-  'neon-sky-runner': {
-    name: 'Neon Sky Runner',
-    url: '/games/neon-sky-runner/index.html',
-    icon: '🚀',
-  },
   'flappy': {
     name: 'Flappy Bird',
     url: '/games/flappy/index.html',
@@ -355,19 +350,8 @@ export default function GamePlayer() {
                         const duration = getDurationNow();
                         setElapsedTime(duration);
                         setGameEnded(true);
-                        // Neon Sky Runner doesn't print scores to console, needs manual input
-                        if (gameId === 'neon-sky-runner' && currentScore === 0) {
-                          const manualScore = prompt('Enter your Best score from the game:');
-                          const score = manualScore ? parseInt(manualScore, 10) : 0;
-                          if (score > 0) {
-                            setCurrentScore(score);
-                            setFinalScore(score);
-                          }
-                          autoSubmitScore(score || 0, duration);
-                        } else {
-                          setFinalScore(currentScore);
-                          autoSubmitScore(currentScore, duration);
-                        }
+                        setFinalScore(currentScore);
+                        autoSubmitScore(currentScore, duration);
                       }}
                       className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/40 hover:bg-red-500/30 transition-colors"
                     >

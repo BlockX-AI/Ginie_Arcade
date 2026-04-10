@@ -5,6 +5,24 @@ import { signGameResult, gameSlugToId, rewardTypeToId } from '@/lib/signer';
 import { mintBadgeNFT, mintScoreNFT, isMintingAvailable } from '@/lib/nftMinter';
 import { getBadgeTokenURI } from '@/lib/badgeTokenURIs';
 import { isDbAvailable, memSessions, memScores } from '@/lib/memoryStore';
+import { isAddress } from 'viem';
+import { z } from 'zod';
+import { isSupportedGameId } from '@/lib/games';
+
+const submitScoreSchema = z.object({
+  sessionId: z.string().trim().uuid(),
+  wallet: z
+    .string()
+    .trim()
+    .refine((value) => isAddress(value), { message: 'Invalid wallet address' }),
+  gameId: z
+    .string()
+    .trim()
+    .min(1)
+    .refine((value) => isSupportedGameId(value), { message: 'Unsupported gameId' }),
+  score: z.coerce.number().int().min(0),
+  duration: z.coerce.number().int().positive(),
+});
 
 /**
  * POST /api/submitScore
@@ -13,18 +31,16 @@ import { isDbAvailable, memSessions, memScores } from '@/lib/memoryStore';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { sessionId, wallet, gameId, score, duration } = body;
+    const parsed = submitScoreSchema.safeParse(body);
 
-    console.log('[submitScore] Request body:', { sessionId, wallet, gameId, score, duration });
-
-    // Validate input
-    if (!sessionId || !wallet || score === undefined || !duration) {
-      console.log('[submitScore] Missing required fields:', { sessionId: !!sessionId, wallet: !!wallet, score, duration });
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Missing required fields', received: { sessionId: !!sessionId, wallet: !!wallet, score, duration } },
+        { error: 'Invalid request payload', details: parsed.error.issues.map((issue) => issue.message) },
         { status: 400 }
       );
     }
+
+    const { sessionId, wallet, gameId, score, duration } = parsed.data;
 
     // Check rate limit
     if (!checkRateLimit(wallet + ':submit', 30, 60000)) {

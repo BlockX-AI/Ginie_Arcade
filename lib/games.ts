@@ -110,6 +110,17 @@ export const games: Game[] = [
   },
 ]
 
+export const activeGameIds = games.map((game) => game.id)
+export const activeGameIdSet = new Set(activeGameIds)
+export const gameNamesById = games.reduce<Record<string, string>>((acc, game) => {
+  acc[game.id] = game.title
+  return acc
+}, {})
+
+export function isSupportedGameId(gameId: string): boolean {
+  return activeGameIdSet.has(gameId)
+}
+
 export function getGameById(id: string): Game | undefined {
   return games.find((game) => game.id === id)
 }

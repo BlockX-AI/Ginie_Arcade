@@ -28,11 +28,16 @@ Ginie Arcade follows a modular layered architecture:
 ├── infra/
 │   └── hardhat/
 ├── packages/
-│   ├── contracts/
-│   └── backend/
+│   └── contracts/
 ├── scripts/
 └── docs/
 ```
+
+## Canonical Runtime Boundaries
+
+- The **active application runtime** is the root `app/` + `lib/` + `prisma/` tree.
+- `packages/contracts` is the active smart-contract workspace.
+- Any `packages/backend` content should be treated as **legacy/reference only** and not as an active second runtime.
 
 ## Game Asset Strategy
 
@@ -44,7 +49,7 @@ Ginie Arcade follows a modular layered architecture:
 
 - `flappy`
 - `snake-io`
-- `the-house-game`
+- `the-house`
 - `shooter`
 - `8ball-pool`
 - `sudoku`

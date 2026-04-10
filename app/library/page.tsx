@@ -225,14 +225,14 @@ export default function LibraryPage() {
                 Featured
               </p>
               <h3 className="mt-2 font-zentry text-3xl uppercase text-white md:text-4xl">
-                Neon Sky Runner
+                Flappy Bird
               </h3>
               <p className="mt-2 max-w-sm font-circular-web text-sm text-white/50">
-                Our most popular game. Race through neon-lit skies and compete
-                for the highest on-chain score.
+                Our most popular game. Navigate tight pipe gaps and compete for
+                the highest on-chain score.
               </p>
               <Link
-                href="/play/neon-sky-runner"
+                href="/play/flappy"
                 className="mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-crimson px-6 py-2.5 text-xs font-robert-medium uppercase text-white hover:bg-electric-red transition-colors"
               >
                 <TiLocationArrow className="text-base" />

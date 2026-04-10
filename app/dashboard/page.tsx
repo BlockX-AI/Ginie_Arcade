@@ -9,6 +9,7 @@ import { Trophy, Zap, Target, Award, TrendingUp, Gamepad2, Clock, ExternalLink, 
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { gameNamesById } from '@/lib/games';
 
 interface Badge {
   id: string;
@@ -38,12 +39,7 @@ interface PlayerStats {
   badges: Badge[];
 }
 
-const GAME_NAMES: Record<string, string> = {
-  'neon-sky-runner': 'Neon Sky Runner',
-  'tilenova': 'TileNova',
-  'flappy': 'Flappy Bird',
-  'sudoku': 'Sudoku',
-};
+const DASHBOARD_HIGHLIGHT_GAME_IDS = ['flappy', 'snake-io', 'match-three'] as const;
 
 const TIER_STYLES: Record<string, { border: string; bg: string; text: string }> = {
   bronze: { border: 'border-orange-600/30', bg: 'bg-orange-600/10', text: 'text-orange-400' },
@@ -250,13 +246,13 @@ export default function Dashboard() {
         <div className="mb-10">
           <p className="font-robert-medium text-xs uppercase tracking-wider text-white/40 mb-4">High Scores</p>
           <div className="grid gap-3 md:grid-cols-3">
-            {['neon-sky-runner', 'tilenova', 'flappy'].map((gid) => (
+            {DASHBOARD_HIGHLIGHT_GAME_IDS.map((gid) => (
               <Link key={gid} href={`/play/${gid}`} className="dash-anim-in group flex items-center gap-4 rounded-xl border border-white/5 bg-white/[0.01] p-5 hover:border-crimson/20 hover:bg-crimson/[0.02] transition-all">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/5 border border-white/5 group-hover:border-crimson/20 transition-colors">
                   <Gamepad2 className="h-5 w-5 text-white/30 group-hover:text-crimson transition-colors" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-robert-medium text-sm text-white truncate">{GAME_NAMES[gid]}</p>
+                  <p className="font-robert-medium text-sm text-white truncate">{gameNamesById[gid] || gid}</p>
                   <p className="font-general text-[9px] uppercase tracking-wider text-white/20">Personal Best</p>
                 </div>
                 <p className="font-zentry text-xl font-bold text-crimson">{(highScores[gid] || 0).toLocaleString()}</p>
@@ -491,7 +487,7 @@ export default function Dashboard() {
                     <Gamepad2 className="h-6 w-6 text-blue-400/70 group-hover:text-blue-400 transition-colors" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-robert-medium text-base text-white group-hover:text-blue-100 transition-colors">{GAME_NAMES[game.gameId] || game.gameId}</p>
+                    <p className="font-robert-medium text-base text-white group-hover:text-blue-100 transition-colors">{gameNamesById[game.gameId] || game.gameId}</p>
                     <div className="flex items-center gap-3 mt-1 text-[11px] text-white/30">
                       <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{game.duration || 0}s</span>
                       <span className="h-1 w-1 rounded-full bg-white/20" />

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Trophy, Medal, Award, Crown, Zap, Star, Gamepad2, Shield } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { gameNamesById } from '@/lib/games';
 
 interface LeaderboardEntry {
   rank: number;
@@ -23,13 +24,13 @@ interface GlobalLeaderboardEntry {
   achievements: number;
 }
 
-type TabType = 'global' | 'neon-sky-runner' | 'tilenova' | 'flappy';
+type TabType = 'global' | 'flappy' | 'snake-io' | 'match-three';
 
 const tabs: { id: TabType; label: string; sub: string; icon: React.ElementType }[] = [
   { id: 'global', label: 'Global XP', sub: 'All Players', icon: Crown },
-  { id: 'neon-sky-runner', label: 'Neon Sky Runner', sub: 'Endless Runner', icon: Zap },
-  { id: 'tilenova', label: 'TileNova', sub: 'Puzzle Strategy', icon: Gamepad2 },
   { id: 'flappy', label: 'Flappy Bird', sub: 'Classic Arcade', icon: Star },
+  { id: 'snake-io', label: 'Snake.io', sub: 'Arena Survival', icon: Zap },
+  { id: 'match-three', label: 'Match Three', sub: 'Puzzle Strategy', icon: Gamepad2 },
 ];
 
 export default function Leaderboard() {
@@ -256,7 +257,7 @@ export default function Leaderboard() {
                     <p className="font-circular-web text-[11px] text-white/30 leading-relaxed">
                       {selectedTab === 'global'
                         ? 'Global rankings are based on total XP earned across all games. Play more and hit milestones to climb.'
-                        : 'All scores are verified on-chain with anti-cheat protection. Only your highest score counts.'}
+                        : `All scores are verified on-chain with anti-cheat protection. Showing ${gameNamesById[selectedTab] || selectedTab}.`}
                     </p>
                   </div>
                 </div>

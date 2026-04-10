@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { generateNonce, checkRateLimit } from '@/lib/antiCheat';
 import { isDbAvailable, memSessions } from '@/lib/memoryStore';
+import { isAddress } from 'viem';
+import { z } from 'zod';
+import { isSupportedGameId } from '@/lib/games';
+
+const startSessionSchema = z.object({
+  wallet: z
+    .string()
+    .trim()
+    .refine((value) => isAddress(value), { message: 'Invalid wallet address' }),
+  gameId: z
+    .string()
+    .trim()
+    .min(1)
+    .refine((value) => isSupportedGameId(value), { message: 'Unsupported gameId' }),
+});
 
 /**
  * POST /api/startSession
@@ -10,15 +25,16 @@ import { isDbAvailable, memSessions } from '@/lib/memoryStore';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { wallet, gameId } = body;
+    const parsed = startSessionSchema.safeParse(body);
 
-    // Validate input
-    if (!wallet || !gameId) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Missing required fields: wallet, gameId' },
+        { error: 'Invalid request payload', details: parsed.error.issues.map((issue) => issue.message) },
         { status: 400 }
       );
     }
+
+    const { wallet, gameId } = parsed.data;
 
     // Check rate limit
     if (!checkRateLimit(wallet, 20, 60000)) {
