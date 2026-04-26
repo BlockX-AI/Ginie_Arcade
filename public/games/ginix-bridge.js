@@ -42,10 +42,26 @@
 
     waitForGameReady() {
       const self = this;
+
+      // For HTML/CSS games (sudoku, etc.) that have no Phaser canvas, assume
+      // the game is active after a short delay so endGame / submitXP work.
+      const htmlGameFallback = setTimeout(() => {
+        if (!self.isGameActive) {
+          self.isGameActive = true;
+          self.sendMessage('gameStarted', {
+            gameId: self.gameId,
+            timestamp: Date.now()
+          });
+          _realLog('[Ginix Bridge] HTML game assumed ready (no canvas detected in 5s)');
+        }
+      }, 5000);
+
+      // Poll for any <canvas> (Phaser, PixiJS, Three.js, etc.)
       const checkInterval = setInterval(() => {
-        const canvas = document.getElementById('canvas');
-        if (canvas && canvas.width > 0) {
+        const canvas = document.querySelector('canvas');
+        if (canvas && (canvas.width > 0 || canvas.offsetWidth > 0)) {
           clearInterval(checkInterval);
+          clearTimeout(htmlGameFallback);
           self.isGameActive = true;
           self.sendMessage('gameStarted', {
             gameId: self.gameId,
@@ -55,6 +71,7 @@
         }
       }, 100);
 
+      // Hard timeout — fire error only if still no canvas after 30s
       setTimeout(() => {
         clearInterval(checkInterval);
         if (!self.isGameActive) {

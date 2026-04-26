@@ -75,6 +75,7 @@ export default function GamePlayer() {
   const [claimTxHash, setClaimTxHash] = useState<`0x${string}` | undefined>();
 
   const hasSubmitted = useRef(false);
+  const roundStartTime = useRef<number>(0);
   const { writeContractAsync } = useWriteContract();
   const { isSuccess: claimTxConfirmed } = useWaitForTransactionReceipt({ hash: claimTxHash });
 
@@ -85,9 +86,9 @@ export default function GamePlayer() {
   const gameConfig = GAME_CONFIG[gameId];
 
   const getDurationNow = useCallback(() => {
-    if (!startTime) return elapsedTime;
-    return Math.max(0, Math.floor((Date.now() - startTime) / 1000));
-  }, [startTime, elapsedTime]);
+    if (!roundStartTime.current) return elapsedTime;
+    return Math.max(0, Math.floor((Date.now() - roundStartTime.current) / 1000));
+  }, [elapsedTime]);
 
   // Auto-submit score to backend
   const autoSubmitScore = useCallback(async (score: number, duration: number) => {
@@ -177,29 +178,34 @@ export default function GamePlayer() {
     check();
   }, [gameConfig]);
 
+  // Start (or restart) a session — called on page mount and between rounds
+  const startSession = useCallback(async (isRoundRestart = false) => {
+    if (!address) return;
+    try {
+      const response = await fetch('/api/startSession', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: address, gameId }),
+      });
+      if (!response.ok) throw new Error('Failed to start session');
+      const data = await response.json();
+      setSessionId(data.sessionId);
+      setNonce(data.nonce);
+      roundStartTime.current = Date.now();
+      setStartTime(Date.now());
+      hasSubmitted.current = false;
+      if (!isRoundRestart) setIsLoading(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to start session');
+      if (!isRoundRestart) setIsLoading(false);
+    }
+  }, [address, gameId]);
+
   // Start session on mount
   useEffect(() => {
     if (!isConnected || !address) return;
-    const startSession = async () => {
-      try {
-        const response = await fetch('/api/startSession', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ wallet: address, gameId }),
-        });
-        if (!response.ok) throw new Error('Failed to start session');
-        const data = await response.json();
-        setSessionId(data.sessionId);
-        setNonce(data.nonce);
-        setStartTime(Date.now());
-        setIsLoading(false);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to start session');
-        setIsLoading(false);
-      }
-    };
     startSession();
-  }, [address, isConnected, gameId]);
+  }, [address, isConnected, gameId, startSession]);
 
   // Timer
   useEffect(() => {
@@ -216,13 +222,23 @@ export default function GamePlayer() {
       if (!event.data?.type) return;
 
       if (event.data.type === 'scoreUpdate') {
-        setCurrentScore(event.data.score);
+        const incoming = event.data.score as number;
+        setCurrentScore(incoming);
+        // Detect new round: player restarted after a game ended and we already submitted
+        if (gameEnded && hasSubmitted.current) {
+          setGameEnded(false);
+          setSubmitResult(null);
+          setSubmitError(null);
+          setCurrentScore(incoming);
+          startSession(true);
+        }
       }
 
       if (event.data.type === 'gameEnd') {
         const finalScore = event.data.score || currentScore;
         const duration = getDurationNow();
         setCurrentScore(finalScore);
+        setFinalScore(finalScore);
         setElapsedTime(duration);
         setGameEnded(true);
         // Auto-submit immediately
@@ -232,7 +248,7 @@ export default function GamePlayer() {
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [sessionId, address, startTime, currentScore, autoSubmitScore, getDurationNow]);
+  }, [sessionId, address, currentScore, gameEnded, autoSubmitScore, getDurationNow, startSession]);
 
   if (!gameConfig) {
     return (
@@ -490,24 +506,54 @@ export default function GamePlayer() {
                       </div>
                       {submitResult?.scoreNFT ? (
                         <div className="text-center">
-                          <p className="text-green-400 font-bold text-sm mb-1">✅ Score minted on-chain!</p>
+                          <p className="text-green-400 font-bold text-sm mb-1">🏆 New personal best — NFT minted!</p>
                           <a
                             href={`https://testnet.snowtrace.io/tx/${submitResult.scoreNFT.txHash}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 text-xs text-cyan-400 underline"
                           >
-                            <ExternalLink className="w-3 h-3" /> View on Snowtrace (Token #{submitResult.scoreNFT.tokenId})
+                            <ExternalLink className="w-3 h-3" /> Token #{submitResult.scoreNFT.tokenId} on Snowtrace
                           </a>
                         </div>
                       ) : submitResult?.mintAttempted ? (
                         <div className="text-center">
                           <p className="text-red-400 font-bold text-sm mb-1">⚠️ NFT mint failed</p>
                           <p className="text-xs text-gray-400">Backend signer not authorized on contract.</p>
-                          <p className="text-xs text-gray-500 mt-1">Run <code className="text-cyan-400">POST /api/nft/authorize</code> with the deployer key to fix.</p>
+                        </div>
+                      ) : submitResult?.isNewHighScore === false ? (
+                        // Not a new high score — show exactly what they need to beat
+                        <div className="text-center space-y-2">
+                          <p className="text-yellow-400 font-bold text-sm">
+                            🎯 Personal best: <span className="text-white">{submitResult.currentBest}</span>
+                          </p>
+                          <p className="text-xs text-gray-300">
+                            Score <span className="text-cyan-400 font-bold">{submitResult.currentBest + 1}+</span> to mint a new Score NFT
+                          </p>
+                          {submitResult?.nextMilestone && (
+                            <div className="mt-2 pt-2 border-t border-white/10">
+                              <p className="text-xs text-gray-400">
+                                Next reward: <span className="text-purple-400 font-bold">{submitResult.nextMilestone.type}</span>
+                                {' '}at <span className="text-white font-bold">{submitResult.nextMilestone.minScore}</span> pts
+                                {' '}(+{submitResult.nextMilestone.xp} XP)
+                                {submitResult.nextMilestone.gap > 0 && (
+                                  <span className="text-gray-500"> — {submitResult.nextMilestone.gap} more to go</span>
+                                )}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ) : submitResult?.nextMilestone ? (
+                        // First play or already minted something — show next target
+                        <div className="text-center">
+                          <p className="text-xs text-gray-300">
+                            Next reward: <span className="text-purple-400 font-bold">{submitResult.nextMilestone.type}</span>
+                            {' '}at <span className="text-white font-bold">{submitResult.nextMilestone.minScore}</span> pts
+                            {' '}(+{submitResult.nextMilestone.xp} XP)
+                          </p>
                         </div>
                       ) : (
-                        <p className="text-xs text-gray-400">NFT minting not configured — add <code className="text-cyan-400">BACKEND_SIGNER_KEY</code> to .env.local to enable.</p>
+                        <p className="text-xs text-green-400 font-bold">🏆 All rewards for this game unlocked!</p>
                       )}
                     </div>
                   </div>

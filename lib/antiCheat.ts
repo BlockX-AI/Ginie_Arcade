@@ -82,14 +82,12 @@ export function validateScore(
     return { valid: false, reason: `Duration too short (min: ${rules.minDuration}s)` };
   }
 
-  // Check duration matches session time
+  // Reject only if client claims MORE time than the session has existed (fabricated duration).
+  // Multi-round play within the same session is legitimate — the submitted duration may be
+  // shorter than total session wall-clock time and that is fine.
   const actualDuration = (Date.now() - sessionStartTime.getTime()) / 1000;
-  const timeDiff = Math.abs(actualDuration - duration);
-
-  // Allow small drift between client-reported time and server wall-clock time
-  // (tab throttling, iframe scheduling, rounding, etc.)
-  if (timeDiff > 12) {
-    return { valid: false, reason: 'Duration mismatch with session time' };
+  if (duration > actualDuration + 15) {
+    return { valid: false, reason: 'Duration exceeds session time' };
   }
 
   // Check score/time ratio

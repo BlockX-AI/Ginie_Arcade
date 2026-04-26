@@ -16,6 +16,7 @@ const NFT_ABI = [
   'function owner() external view returns (address)',
   'function totalMinted() external view returns (uint256)',
   'function ownerOf(uint256 tokenId) external view returns (address)',
+  'event NFTMinted(address indexed to, uint256 indexed tokenId, uint256 achievementType, uint256 gameId, uint256 value)',
 ];
 
 // Achievement type enum matching the contract

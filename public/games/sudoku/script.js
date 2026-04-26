@@ -556,15 +556,12 @@
     document.getElementById('win-overlay').classList.add('show');
     spawnParticles();
     
-    // Submit score to blockchain
+    // Submit score via bridge
     const finalScore = calculateScore();
     if (window.GinixBridge) {
-      window.GinixBridge.updateScore(finalScore);
-      window.GinixBridge.submitXP(finalScore).then(result => {
-        console.log('Sudoku score submitted to blockchain:', result);
-      }).catch(err => {
-        console.error('Failed to submit sudoku score:', err);
-      });
+      window.GinixBridge.endGame(finalScore);
+    } else if (window.parent !== window) {
+      window.parent.postMessage({ type: 'gameEnd', score: finalScore }, '*');
     }
   }
 
@@ -572,16 +569,13 @@
     stopTimer();
     gameStarted = false;
     document.getElementById('lose-overlay').classList.add('show');
-    
-    // Submit final score to blockchain (even on loss)
+
+    // Submit final score (even on loss)
     const finalScore = calculateScore();
     if (window.GinixBridge) {
-      window.GinixBridge.updateScore(finalScore);
-      window.GinixBridge.submitXP(finalScore).then(result => {
-        console.log('Sudoku score submitted (game over):', result);
-      }).catch(err => {
-        console.error('Failed to submit sudoku score:', err);
-      });
+      window.GinixBridge.endGame(finalScore);
+    } else if (window.parent !== window) {
+      window.parent.postMessage({ type: 'gameEnd', score: finalScore }, '*');
     }
   }
 

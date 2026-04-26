@@ -41,3 +41,4 @@ lerna-debug.log*
 # Local archives / reference dumps
 *.zip
 _ginie_ref/
+.vercel

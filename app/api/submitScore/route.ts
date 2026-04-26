@@ -314,6 +314,8 @@ export async function POST(request: NextRequest) {
       'match-three': 'Match-Three Puzzle',
       'zombie-apocalypse': 'Zombie Apocalypse',
       '8ball-pool': '8 Ball Pool',
+      'shooter': 'Shooter',
+      'the-house': 'The House',
     };
     let scoreNFT: { txHash: string; tokenId: number } | null = null;
     const isNewHighScore = !existingEntry || (existingEntry && score > existingEntry.score);
@@ -321,6 +323,10 @@ export async function POST(request: NextRequest) {
     if (mintAttempted) {
       scoreNFT = await mintScoreNFT(wallet, gameId, GAME_NAMES[gameId] || gameId, score, duration);
     }
+
+    // Surface the previous personal best and next unreached milestone for UI hints
+    const prevBest = existingEntry?.score ?? 0;
+    const nextMilestone = await getNextMilestone(wallet, gameId, score);
 
     return NextResponse.json({
       success: true,
@@ -338,6 +344,9 @@ export async function POST(request: NextRequest) {
       newBadges,
       scoreNFT: scoreNFT ? { txHash: scoreNFT.txHash, tokenId: scoreNFT.tokenId } : null,
       mintAttempted,
+      isNewHighScore,
+      currentBest: prevBest,
+      nextMilestone,
     });
 
   } catch (error) {
@@ -484,6 +493,25 @@ async function checkRewardEligibility(wallet: string, gameId: string, score: num
       { type: 'BILLIARD_PRO', minScore: 2000, xp: 300 },
       { type: 'POOL_CHAMPION', minScore: 5000, xp: 750 },
     ],
+    'snake-io': [
+      { type: 'SNAKE_ROOKIE', minScore: 50, xp: 50 },
+      { type: 'SNAKE_MASTER', minScore: 200, xp: 200 },
+      { type: 'SNAKE_LEGEND', minScore: 500, xp: 500 },
+    ],
+    'shooter': [
+      { type: 'SHOOTER_ROOKIE', minScore: 500, xp: 50 },
+      { type: 'SHOOTER_MASTER', minScore: 2000, xp: 200 },
+      { type: 'SHOOTER_ACE', minScore: 5000, xp: 500 },
+    ],
+    'match-three': [
+      { type: 'MATCH_ROOKIE', minScore: 50, xp: 50 },
+      { type: 'MATCH_MASTER', minScore: 200, xp: 200 },
+      { type: 'GEM_LEGEND', minScore: 500, xp: 500 },
+    ],
+    'the-house': [
+      { type: 'HOUSE_EXPLORER', minScore: 10, xp: 50 },
+      { type: 'HOUSE_MASTER', minScore: 50, xp: 200 },
+    ],
   };
 
   const rules = rewardRules[gameId];
@@ -603,4 +631,48 @@ async function checkAndMintBadges(wallet: string, _gameId: string) {
     console.error('[badges] Error checking/minting badges:', err);
     return [];
   }
+}
+
+/**
+ * Returns the next reward milestone the player hasn't unlocked yet for this game.
+ * Used by the frontend to show "Score X more to earn REWARD_TYPE".
+ */
+async function getNextMilestone(
+  wallet: string,
+  gameId: string,
+  currentScore: number
+): Promise<{ type: string; minScore: number; xp: number; gap: number } | null> {
+  const rewardRules: Record<string, Array<{ type: string; minScore: number; xp: number }>> = {
+    'flappy':            [{ type: 'FLAPPY_ROOKIE', minScore: 10, xp: 50 }, { type: 'PIPE_MASTER', minScore: 50, xp: 200 }],
+    'sudoku':            [{ type: 'PUZZLE_SOLVER', minScore: 500, xp: 100 }, { type: 'LOGIC_MASTER', minScore: 1000, xp: 300 }, { type: 'NEURAL_GENIUS', minScore: 1500, xp: 500 }],
+    'zombie-apocalypse': [{ type: 'ZOMBIE_HUNTER', minScore: 10, xp: 50 }, { type: 'ZOMBIE_SLAYER', minScore: 100, xp: 200 }, { type: 'APOCALYPSE_SURVIVOR', minScore: 300, xp: 500 }],
+    '8ball-pool':        [{ type: 'POOL_ROOKIE', minScore: 500, xp: 100 }, { type: 'BILLIARD_PRO', minScore: 2000, xp: 300 }, { type: 'POOL_CHAMPION', minScore: 5000, xp: 750 }],
+    'snake-io':          [{ type: 'SNAKE_ROOKIE', minScore: 50, xp: 50 }, { type: 'SNAKE_MASTER', minScore: 200, xp: 200 }, { type: 'SNAKE_LEGEND', minScore: 500, xp: 500 }],
+    'shooter':           [{ type: 'SHOOTER_ROOKIE', minScore: 500, xp: 50 }, { type: 'SHOOTER_MASTER', minScore: 2000, xp: 200 }, { type: 'SHOOTER_ACE', minScore: 5000, xp: 500 }],
+    'match-three':       [{ type: 'MATCH_ROOKIE', minScore: 50, xp: 50 }, { type: 'MATCH_MASTER', minScore: 200, xp: 200 }, { type: 'GEM_LEGEND', minScore: 500, xp: 500 }],
+    'the-house':         [{ type: 'HOUSE_EXPLORER', minScore: 10, xp: 50 }, { type: 'HOUSE_MASTER', minScore: 50, xp: 200 }],
+  };
+
+  const rules = rewardRules[gameId];
+  if (!rules) return null;
+
+  // Sort ascending by minScore
+  const sorted = [...rules].sort((a, b) => a.minScore - b.minScore);
+
+  for (const rule of sorted) {
+    // Already earned?
+    const existing = await prisma.achievement.findFirst({
+      where: { walletAddress: wallet, gameId, type: rule.type },
+    });
+    if (existing) continue;
+    // Not yet earned — this is the next milestone
+    return {
+      type: rule.type,
+      minScore: rule.minScore,
+      xp: rule.xp,
+      gap: Math.max(0, rule.minScore - currentScore),
+    };
+  }
+
+  return null; // All rewards earned
 }
