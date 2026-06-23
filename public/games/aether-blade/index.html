@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>Aether Blade</title>
+<script src="/games/ginix-bridge.js"></script>
+<script src="/runtime.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100dvh;overflow:hidden;background:#000;font-family:'Courier New',monospace;}
+  #game-container{
+    width:100%;
+    height:100%;
+    touch-action:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  #game-container canvas{
+    display:block;
+    touch-action:none;
+    /* let Phaser's FIT scale handle sizing — don't constrain with CSS */
+    max-width:100%;
+    max-height:100%;
+  }
+  #mobile-ui {
+    position: absolute; inset: 0; pointer-events: none;
+    display: none; z-index: 1000;
+  }
+  @media (pointer: coarse) {
+    #mobile-ui { display: block; }
+  }
+  #mobile-affinity-ui {
+    position: absolute; inset: 0; pointer-events: none;
+    display: none; z-index: 1001; flex-direction: column;
+    align-items: center; justify-content: center; gap: 20px;
+    background: rgba(0,0,0,0.7);
+  }
+  .mbtn-affinity {
+    background: rgba(0,0,0,0.8); border: 2px solid white;
+    border-radius: 10px; color: white; font-weight: bold; font-family: 'Courier New', monospace;
+    width: 200px; height: 50px; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    user-select: none; touch-action: none; pointer-events: auto;
+  }
+  .mbtn-affinity.fire { border-color: #ff4400; color: #ff6622; }
+  .mbtn-affinity.ice { border-color: #44ddff; color: #66eeff; }
+  .mbtn-affinity.earth { border-color: #88aa22; color: #aacc44; }
+  .mbtn-affinity.wind { border-color: #aaffaa; color: #ccffcc; }
+  .dpad {
+    position: absolute; bottom: 20px; left: 20px;
+    display: flex; gap: 15px; pointer-events: auto;
+  }
+  .actions {
+    position: absolute; bottom: 20px; right: 20px;
+    width: 140px; height: 140px; pointer-events: auto;
+  }
+  .mbtn {
+    background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50%; color: white; font-weight: bold; font-family: 'Courier New', monospace;
+    display: flex; align-items: center; justify-content: center;
+    user-select: none; touch-action: none; position: absolute;
+  }
+  .mbtn:active { background: rgba(0,0,0,0.6); }
+  .mbtn-dir { position: relative; width: 60px; height: 60px; font-size: 24px; }
+  .mbtn-jump { bottom: 0; right: 70px; width: 60px; height: 60px; font-size: 14px; }
+  .mbtn-slash { bottom: 70px; right: 0; width: 60px; height: 60px; font-size: 14px; }
+  .mbtn-kick { bottom: 0; right: 0; width: 55px; height: 55px; font-size: 12px; }
+  .mbtn-cast { bottom: 75px; right: 75px; width: 55px; height: 55px; font-size: 12px; }
+  .elements {
+    position: absolute; bottom: 20px; left: 20px;
+    width: 140px; height: 140px; pointer-events: auto;
+  }
+  .mbtn-fire { bottom: 70px; left: 35px; width: 50px; height: 50px; font-size: 11px; border-color: #ff4400; color: #ff6622; }
+  .mbtn-ice { bottom: 35px; left: 0; width: 50px; height: 50px; font-size: 11px; border-color: #44ddff; color: #66eeff; }
+  .mbtn-earth { bottom: 0; left: 35px; width: 50px; height: 50px; font-size: 10px; border-color: #88aa22; color: #aacc44; }
+  .mbtn-wind { bottom: 35px; left: 70px; width: 50px; height: 50px; font-size: 11px; border-color: #aaffaa; color: #ccffcc; }
+</style>
+</head>
+<body>
+<div id="game-container"></div>
+
+<div id="mobile-affinity-ui">
+  <div class="mbtn-affinity fire" onclick="if(window.selectAffinity) window.selectAffinity('FIRE')">FIRE</div>
+  <div class="mbtn-affinity ice" onclick="if(window.selectAffinity) window.selectAffinity('ICE')">ICE</div>
+  <div class="mbtn-affinity earth" onclick="if(window.selectAffinity) window.selectAffinity('EARTH')">EARTH</div>
+  <div class="mbtn-affinity wind" onclick="if(window.selectAffinity) window.selectAffinity('WIND')">WIND</div>
+</div>
+
+<div id="mobile-ui">
+  <!-- No D-Pad needed for auto-runner -->
+  <div class="elements">
+    <div class="mbtn mbtn-fire" id="btn-fire">FIRE</div>
+    <div class="mbtn mbtn-ice" id="btn-ice">ICE</div>
+    <div class="mbtn mbtn-earth" id="btn-earth">EARTH</div>
+    <div class="mbtn mbtn-wind" id="btn-wind">WIND</div>
+  </div>
+  <div class="actions">
+    <div class="mbtn mbtn-jump" id="btn-jump">JUMP</div>
+    <div class="mbtn mbtn-slash" id="btn-slash">SLASH</div>
+    <div class="mbtn mbtn-kick" id="btn-kick">KICK</div>
+    <div class="mbtn mbtn-cast" id="btn-cast">CAST</div>
+  </div>
+</div>
+
+<script>
+  window.mobileLeft = false;
+  window.mobileRight = false;
+  
+  const bindBtn = (id, downCb, upCb) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('pointerdown', (e) => { e.preventDefault(); downCb(); });
+    el.addEventListener('pointerup', (e) => { e.preventDefault(); if(upCb) upCb(); });
+    el.addEventListener('pointerout', (e) => { e.preventDefault(); if(upCb) upCb(); });
+  };
+
+  bindBtn('btn-left', () => window.mobileLeft = true, () => window.mobileLeft = false);
+  bindBtn('btn-right', () => window.mobileRight = true, () => window.mobileRight = false);
+  
+  bindBtn('btn-jump', () => { if(window.doJump) window.doJump(); });
+  bindBtn('btn-slash', () => { if(window.doSlash) window.doSlash(); });
+  bindBtn('btn-kick', () => { if(window.doKick) window.doKick(); });
+  bindBtn('btn-cast', () => { if(window.doCast) window.doCast(); });
+  bindBtn('btn-fire', () => { if(window.setHoldElement) window.setHoldElement('FIRE'); }, () => { if(window.clearHoldElement) window.clearHoldElement('FIRE'); });
+  bindBtn('btn-ice', () => { if(window.setHoldElement) window.setHoldElement('ICE'); }, () => { if(window.clearHoldElement) window.clearHoldElement('ICE'); });
+  bindBtn('btn-earth', () => { if(window.setHoldElement) window.setHoldElement('EARTH'); }, () => { if(window.clearHoldElement) window.clearHoldElement('EARTH'); });
+  bindBtn('btn-wind', () => { if(window.setHoldElement) window.setHoldElement('WIND'); }, () => { if(window.clearHoldElement) window.clearHoldElement('WIND'); });
+</script>
+<script src="game.js"></script>
+</body>
+</html>

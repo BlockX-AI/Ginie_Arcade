@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS=--max-old-space-size=8192 next dev --webpack",
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -84,6 +84,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "postcss": "^8.5",
     "prisma": "^5.9.0",
     "tailwindcss": "^3.4.17",

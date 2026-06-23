@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Rocket, Puzzle, Bird, Grid3x3, Users, Trophy, Play, Zap, Sparkles } from 'lucide-react';
+import { Rocket, Puzzle, Bird, Grid3x3, Users, Trophy, Play, Zap, Sparkles, Anchor, Sword, Moon } from 'lucide-react';
 import type { Game } from '@/lib/games';
 import { formatNumber } from '@/lib/games';
 
@@ -10,6 +10,9 @@ const iconMap = {
   Puzzle,
   Bird,
   Grid3x3,
+  Anchor,
+  Sword,
+  Moon,
 };
 
 // Category-specific accent colors
