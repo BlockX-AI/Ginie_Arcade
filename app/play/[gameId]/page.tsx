@@ -205,7 +205,10 @@ export default function GamePlayer() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ wallet: address, gameId }),
         });
-        if (!response.ok) throw new Error('Failed to start session');
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          throw new Error(errorData?.error || errorData?.details || 'Failed to start session');
+        }
         const data = await response.json();
         setSessionId(data.sessionId);
         setNonce(data.nonce);
@@ -530,8 +533,14 @@ export default function GamePlayer() {
                             <ExternalLink className="w-3 h-3" /> View on Snowtrace
                           </a>
                         </div>
+                      ) : submitResult?.mintStatus === 'unavailable' ? (
+                        <p className="text-xs text-yellow-400 text-center">NFT minting is currently offline.</p>
+                      ) : submitResult?.mintStatus === 'failed' ? (
+                        <p className="text-xs text-red-400 text-center">Failed to mint score NFT.</p>
+                      ) : submitResult?.mintStatus === 'skipped_not_highscore' ? (
+                        <p className="text-xs text-gray-400 text-center">Beat your high score to mint a new NFT!</p>
                       ) : (
-                        <p className="text-xs text-gray-400">Your score is being minted as an NFT automatically...</p>
+                        <p className="text-xs text-gray-400 text-center">Your score is being minted as an NFT automatically...</p>
                       )}
                     </div>
                   </div>

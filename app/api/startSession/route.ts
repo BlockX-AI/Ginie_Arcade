@@ -60,10 +60,10 @@ export async function POST(request: NextRequest) {
       startedAt: session.startedAt.toISOString(),
     });
 
-  } catch (error) {
-    console.error('Error starting session:', error);
+  } catch (error: any) {
+    console.error('Error starting session:', error?.message);
     return NextResponse.json(
-      { error: 'Failed to start session' },
+      { error: 'Failed to start session', details: error?.message || String(error) },
       { status: 500 }
     );
   }
