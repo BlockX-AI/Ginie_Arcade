@@ -50,6 +50,21 @@ export const GAME_RULES: Record<string, GameRules> = {
     minDuration: 60,
     maxScorePerSecond: 100,
   },
+  'aether-blade': {
+    maxScore: 50000,
+    minDuration: 5,
+    maxScorePerSecond: 500,
+  },
+  'eclipse': {
+    maxScore: 50000,
+    minDuration: 5,
+    maxScorePerSecond: 500,
+  },
+  'project-abyss': {
+    maxScore: 50000,
+    minDuration: 5,
+    maxScorePerSecond: 500,
+  },
 };
 
 export interface ValidationResult {

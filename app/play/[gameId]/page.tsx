@@ -49,6 +49,21 @@ const GAME_CONFIG: Record<string, { name: string; url: string; icon: string }> =
     url: '/games/zombie-apocalypse/index.html',
     icon: '🧟',
   },
+  'project-abyss': {
+    name: 'Project Abyss',
+    url: '/games/project-abyss/index.html',
+    icon: '⚓',
+  },
+  'aether-blade': {
+    name: 'Aether Blade',
+    url: '/games/aether-blade/index.html',
+    icon: '⚔️',
+  },
+  'eclipse': {
+    name: 'Eclipse',
+    url: '/games/eclipse/index.html',
+    icon: '🌙',
+  },
 };
 
 export default function GamePlayer() {
@@ -83,6 +98,9 @@ export default function GamePlayer() {
   }, [claimTxConfirmed, claimStatus]);
 
   const gameConfig = GAME_CONFIG[gameId];
+
+  const autoRotateGames = ['aether-blade', 'project-abyss', 'eclipse'];
+  const shouldAutoRotate = autoRotateGames.includes(gameId);
 
   const getDurationNow = useCallback(() => {
     if (!startTime) return elapsedTime;
@@ -187,7 +205,10 @@ export default function GamePlayer() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ wallet: address, gameId }),
         });
-        if (!response.ok) throw new Error('Failed to start session');
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          throw new Error(errorData?.error || errorData?.details || 'Failed to start session');
+        }
         const data = await response.json();
         setSessionId(data.sessionId);
         setNonce(data.nonce);
@@ -307,29 +328,29 @@ export default function GamePlayer() {
   const xpEarned = submitResult?.xpEarned || 0;
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-black" data-game-page="true">
+    <div className={`fixed inset-0 flex flex-col bg-black ${(shouldAutoRotate && !gameEnded) ? 'auto-rotate-wrapper' : ''}`} data-game-page="true">
       <div className="flex-1 flex flex-col">
         {/* Stats Bar */}
         <div className="bg-black/80 border-b border-white/10 backdrop-blur-sm">
           <div className="section-container py-4">
             <div className="flex items-center justify-between">
-              <button onClick={() => router.push('/library')} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+              <button onClick={() => router.push('/library')} className="flex items-center gap-1 sm:gap-2 text-gray-400 hover:text-white transition-colors">
                 <ArrowLeft className="w-5 h-5" />
-                <span>Back</span>
+                <span className="hidden sm:inline">Back</span>
               </button>
 
-              <div className="flex items-center gap-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg cyber-gradient flex items-center justify-center">
-                    <Trophy className="w-5 h-5 text-white" />
+              <div className="flex items-center gap-3 sm:gap-8">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg cyber-gradient flex items-center justify-center">
+                    <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Score</p>
-                    <p className="font-['Orbitron'] text-xl text-white font-bold">{currentScore}</p>
+                    <p className="text-[10px] sm:text-xs text-gray-500">Score</p>
+                    <p className="font-['Orbitron'] text-base sm:text-xl text-white font-bold">{currentScore}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="hidden sm:flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg plasma-gradient flex items-center justify-center">
                     <Clock className="w-5 h-5 text-white" />
                   </div>
@@ -340,8 +361,8 @@ export default function GamePlayer() {
                 </div>
 
                 {!gameEnded && (
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass-card">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg glass-card">
                       <Zap className="w-4 h-4 text-green-400 animate-pulse" />
                       <span className="text-sm text-green-400 font-bold">LIVE</span>
                     </div>
@@ -364,10 +385,11 @@ export default function GamePlayer() {
                           autoSubmitScore(currentScore, duration);
                         }
                       }}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/40 hover:bg-red-500/30 transition-colors"
+                      className="flex items-center gap-1 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-red-500/20 border border-red-500/40 hover:bg-red-500/30 transition-colors"
                     >
-                      <Trophy className="w-4 h-4 text-red-400" />
-                      <span className="text-sm text-red-400 font-bold">End &amp; Submit</span>
+                      <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-red-400" />
+                      <span className="text-xs sm:text-sm text-red-400 font-bold hidden sm:inline">End &amp; Submit</span>
+                      <span className="text-xs text-red-400 font-bold sm:hidden">Submit</span>
                     </button>
                   </div>
                 )}
@@ -414,16 +436,16 @@ export default function GamePlayer() {
                   <p className="text-5xl font-['Orbitron'] font-bold gradient-text">{finalScore || currentScore}</p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3 text-sm">
-                  <div className="glass-card p-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                  <div className="glass-card p-2 sm:p-3">
                     <p className="text-gray-400 text-xs mb-1">Time</p>
                     <p className="text-lg font-bold text-white">{elapsedTime}s</p>
                   </div>
-                  <div className="glass-card p-3">
+                  <div className="glass-card p-2 sm:p-3">
                     <p className="text-gray-400 text-xs mb-1">XP Earned</p>
                     <p className="text-lg font-bold text-green-400">+{xpEarned}</p>
                   </div>
-                  <div className="glass-card p-3">
+                  <div className="glass-card p-2 sm:p-3">
                     <p className="text-gray-400 text-xs mb-1">Status</p>
                     {isSubmitting && <Loader2 className="w-5 h-5 text-cyan-400 animate-spin mx-auto" />}
                     {submitResult?.success && <CheckCircle className="w-5 h-5 text-green-400 mx-auto" />}
@@ -511,15 +533,21 @@ export default function GamePlayer() {
                             <ExternalLink className="w-3 h-3" /> View on Snowtrace
                           </a>
                         </div>
+                      ) : submitResult?.mintStatus === 'unavailable' ? (
+                        <p className="text-xs text-yellow-400 text-center">NFT minting is currently offline.</p>
+                      ) : submitResult?.mintStatus === 'failed' ? (
+                        <p className="text-xs text-red-400 text-center">Failed to mint score NFT.</p>
+                      ) : submitResult?.mintStatus === 'skipped_not_highscore' ? (
+                        <p className="text-xs text-gray-400 text-center">Beat your high score to mint a new NFT!</p>
                       ) : (
-                        <p className="text-xs text-gray-400">Your score is being minted as an NFT automatically...</p>
+                        <p className="text-xs text-gray-400 text-center">Your score is being minted as an NFT automatically...</p>
                       )}
                     </div>
                   </div>
                 )}
 
                 {/* Action buttons */}
-                <div className="grid grid-cols-3 gap-3 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
                   <button
                     onClick={() => router.push('/dashboard')}
                     className="glass-card px-4 py-3 rounded-xl text-white font-bold hover:scale-105 transition-transform flex items-center justify-center gap-2 text-sm"
@@ -544,6 +572,28 @@ export default function GamePlayer() {
           </div>
         )}
       </div>
+
+      {shouldAutoRotate && (
+        <style>{`
+          @media screen and (orientation: portrait) {
+            .auto-rotate-wrapper {
+              transform: rotate(90deg) translateY(-100%);
+              transform-origin: top left;
+              width: 100vh !important;
+              width: 100dvh !important;
+              height: 100vw !important;
+              height: 100dvw !important;
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              bottom: auto !important;
+              right: auto !important;
+              overflow: hidden;
+              z-index: 9999;
+            }
+          }
+        `}</style>
+      )}
     </div>
   );
 }

@@ -208,11 +208,21 @@ export async function POST(request: NextRequest) {
       'match-three': 'Match-Three Puzzle',
       'zombie-apocalypse': 'Zombie Apocalypse',
       '8ball-pool': '8 Ball Pool',
+      'aether-blade': 'Aether Blade',
+      'eclipse': 'Eclipse',
+      'project-abyss': 'Project Abyss',
     };
     let scoreNFT: { txHash: string; tokenId: number } | null = null;
+    let mintStatus: string = 'skipped_not_highscore';
     const isNewHighScore = !existingEntry || (existingEntry && score > existingEntry.score);
-    if (isMintingAvailable() && score > 0 && isNewHighScore) {
-      scoreNFT = await mintScoreNFT(wallet, gameId, GAME_NAMES[gameId] || gameId, score, duration);
+    
+    if (score > 0 && isNewHighScore) {
+      if (isMintingAvailable()) {
+        scoreNFT = await mintScoreNFT(wallet, gameId, GAME_NAMES[gameId] || gameId, score, duration);
+        mintStatus = scoreNFT ? 'success' : 'failed';
+      } else {
+        mintStatus = 'unavailable';
+      }
     }
 
     return NextResponse.json({
@@ -230,6 +240,7 @@ export async function POST(request: NextRequest) {
       } : null,
       newBadges,
       scoreNFT: scoreNFT ? { txHash: scoreNFT.txHash, tokenId: scoreNFT.tokenId } : null,
+      mintStatus,
     });
 
   } catch (error) {

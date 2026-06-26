@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Day & Night Survival</title>
+<script src="/games/ginix-bridge.js"></script>
+<script src="/runtime.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; display: flex; align-items: center; justify-content: center; width: 100vw; height: 100vh; overflow: hidden; }
+  canvas { display: block; touch-action: none; }
+  #mobile-ui {
+    position: absolute; inset: 0; pointer-events: none;
+    display: none; z-index: 1000;
+  }
+  @media (pointer: coarse) {
+    #mobile-ui { display: block; }
+  }
+  .dpad {
+    position: absolute; bottom: 20px; left: 20px;
+    display: flex; gap: 15px; pointer-events: auto;
+  }
+  .actions {
+    position: absolute; bottom: 20px; right: 20px;
+    width: 140px; height: 140px; pointer-events: auto;
+  }
+  .mbtn {
+    background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50%; color: white; font-weight: bold; font-family: sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    user-select: none; touch-action: none; position: absolute;
+  }
+  .mbtn:active { background: rgba(0,0,0,0.6); }
+  .mbtn-dir { position: relative; width: 60px; height: 60px; font-size: 24px; }
+  .mbtn-jump { bottom: 0; right: 130px; width: 60px; height: 60px; font-size: 14px; }
+  .mbtn-slash { bottom: 0; right: 65px; width: 60px; height: 60px; font-size: 14px; }
+  .mbtn-burst { bottom: 70px; right: 0; width: 60px; height: 60px; font-size: 14px; }
+  .mbtn-arrow { bottom: 0; right: 0; width: 55px; height: 55px; font-size: 12px; }
+  .mbtn-domain { bottom: 75px; right: 75px; width: 55px; height: 55px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="mobile-ui">
+  <div class="dpad">
+    <div class="mbtn mbtn-dir" id="btn-left">◀</div>
+    <div class="mbtn mbtn-dir" id="btn-right">▶</div>
+  </div>
+  <div class="actions">
+    <div class="mbtn mbtn-jump" id="btn-jump">JUMP</div>
+    <div class="mbtn mbtn-slash" id="btn-slash">SLASH</div>
+    <div class="mbtn mbtn-burst" id="btn-burst">BURST</div>
+    <div class="mbtn mbtn-arrow" id="btn-arrow">ARROW</div>
+    <div class="mbtn mbtn-domain" id="btn-domain">DOMAIN</div>
+  </div>
+</div>
+
+<script>
+  window.mobileLeft = false;
+  window.mobileRight = false;
+  
+  const bindBtn = (id, downCb, upCb) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('pointerdown', (e) => { e.preventDefault(); downCb(); });
+    el.addEventListener('pointerup', (e) => { e.preventDefault(); if(upCb) upCb(); });
+    el.addEventListener('pointerout', (e) => { e.preventDefault(); if(upCb) upCb(); });
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    bindBtn('btn-left', () => window.mobileLeft = true, () => window.mobileLeft = false);
+    bindBtn('btn-right', () => window.mobileRight = true, () => window.mobileRight = false);
+    
+    bindBtn('btn-jump', () => { if(window.doJump) window.doJump(); });
+    bindBtn('btn-slash', () => { if(window.doSlash) window.doSlash(); });
+    bindBtn('btn-burst', () => { if(window.doBurst) window.doBurst(); });
+    bindBtn('btn-arrow', () => { if(window.doArrow) window.doArrow(); });
+    bindBtn('btn-domain', () => { if(window.doDomain) window.doDomain(); });
+  });
+</script>
+<script src="eclipse.js"></script>
+</body>
+</html>
+
