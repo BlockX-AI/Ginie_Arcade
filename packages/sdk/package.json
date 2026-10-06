@@ -1,0 +1,8 @@
+{
+  "name": "@genie-arcade/sdk",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Genie Arcade SDK — shared utilities for game integration",
+  "main": "index.ts",
+  "scripts": {}
+}

@@ -1,0 +1,13 @@
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  '@stellar/stellar-sdk': set this to true or false
+  blake-hash: set this to true or false
+  bufferutil: true
+  keccak: true
+  prisma: true
+  protobufjs: set this to true or false
+  sharp: true
+  tiny-secp256k1: set this to true or false
+  usb: set this to true or false
+  utf-8-validate: true

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SUDOKU — Neural Grid</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">SUDOKU</div>
+      <div class="tagline">Neural Grid Challenge</div>
+    </header>
+
+    <div class="level-selector">
+      <button class="level-btn easy active" data-difficulty="easy">Easy</button>
+      <button class="level-btn medium" data-difficulty="medium">Medium</button>
+      <button class="level-btn hard" data-difficulty="hard">Hard</button>
+    </div>
+
+    <div class="progress-wrap" style="width:100%;max-width:560px">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+
+    <div class="game-layout">
+      <div class="stats-panel">
+        <div class="stat-card">
+          <div class="stat-label">⏱ Time</div>
+          <div class="stat-value timer" id="timer">00:00</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">✗ Mistakes</div>
+          <div class="mistakes-dots" id="mistakes-dots">
+            <div class="mistake-dot" id="dot-0"></div>
+            <div class="mistake-dot" id="dot-1"></div>
+            <div class="mistake-dot" id="dot-2"></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">⬜ Filled</div>
+          <div class="stat-value" id="filled-count">0/81</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">🎯 Level</div>
+          <div class="stat-value" id="level-display" style="font-size:1.2rem;text-transform:uppercase;letter-spacing:0.1em">Easy</div>
+        </div>
+      </div>
+
+      <div class="grid-wrapper">
+        <div class="grid-container">
+          <div class="grid-glow"></div>
+          <div id="board" class="board" role="grid" aria-label="Sudoku board"></div>
+        </div>
+        <div class="numpad" id="numpad">
+          <button class="num-btn" data-num="1">1</button>
+          <button class="num-btn" data-num="2">2</button>
+          <button class="num-btn" data-num="3">3</button>
+          <button class="num-btn" data-num="4">4</button>
+          <button class="num-btn" data-num="5">5</button>
+          <button class="num-btn" data-num="6">6</button>
+          <button class="num-btn" data-num="7">7</button>
+          <button class="num-btn" data-num="8">8</button>
+          <button class="num-btn" data-num="9">9</button>
+        </div>
+        <button class="notes-toggle" id="notes-toggle">
+          <span>✏</span> Notes Mode <span id="notes-status">OFF</span>
+        </button>
+      </div>
+
+      <div class="controls-panel">
+        <button class="ctrl-btn" id="hintBtn">
+          <span class="icon">💡</span> Hint
+          <span class="hint-count" id="hint-count">×3</span>
+        </button>
+        <button class="ctrl-btn" id="eraseBtn">
+          <span class="icon">⌫</span> Erase
+        </button>
+        <button class="ctrl-btn" id="undoBtn">
+          <span class="icon">↩</span> Undo
+        </button>
+        <button class="ctrl-btn" id="newGameBtn">
+          <span class="icon">↺</span> New Game
+        </button>
+        <button class="ctrl-btn" id="checkBtn">
+          <span class="icon">✓</span> <span class="ctrl-label" id="checkLabel">Check</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="win-overlay">
+    <div class="overlay-card">
+      <div class="overlay-title win">SOLVED!</div>
+      <div style="color:var(--muted);font-size:0.85rem;letter-spacing:0.3em">GRID COMPLETE</div>
+      <div class="overlay-stats">
+        <div class="overlay-stat">
+          <div class="overlay-stat-label">Time</div>
+          <div class="overlay-stat-value" id="win-time">—</div>
+        </div>
+        <div class="overlay-stat">
+          <div class="overlay-stat-label">Mistakes</div>
+          <div class="overlay-stat-value" id="win-mistakes">—</div>
+        </div>
+        <div class="overlay-stat">
+          <div class="overlay-stat-label">Hints Used</div>
+          <div class="overlay-stat-value" id="win-hints">—</div>
+        </div>
+        <div class="overlay-stat">
+          <div class="overlay-stat-label">Level</div>
+          <div class="overlay-stat-value" id="win-level">—</div>
+        </div>
+      </div>
+      <button class="play-again-btn" id="play-again-btn">Play Again</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="lose-overlay">
+    <div class="overlay-card">
+      <div class="overlay-title lose">GAME OVER</div>
+      <div style="color:var(--muted);font-size:0.85rem;letter-spacing:0.3em;margin-bottom:24px">3 MISTAKES REACHED</div>
+      <button class="play-again-btn" id="try-again-btn" style="border-color:var(--danger);color:var(--danger)">Try Again</button>
+    </div>
+  </div>
+
+  <script src="../ginix-bridge.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

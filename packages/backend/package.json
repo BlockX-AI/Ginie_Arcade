@@ -1,0 +1,49 @@
+{
+  "name": "ginix-hub",
+  "version": "1.0.0",
+  "description": "Ginix Arcade Hub - Backend + Frontend",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.9.0",
+    "@rainbow-me/rainbowkit": "^2.0.0",
+    "@tanstack/react-query": "^5.20.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "crypto": "^1.0.1",
+    "embla-carousel-react": "^8.6.0",
+    "ethers": "^6.10.0",
+    "framer-motion": "^12.31.0",
+    "gsap": "^3.14.2",
+    "lenis": "^1.3.17",
+    "lucide-react": "^0.563.0",
+    "next": "^14.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7",
+    "viem": "^2.7.0",
+    "wagmi": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.0",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.1.0",
+    "postcss": "^8.4.0",
+    "prisma": "^5.9.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.0"
+  }
+}

@@ -1,0 +1,132 @@
+/* ── Flappy Bird – Ginix Arcade ── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #0a0a1a;
+    font-family: 'Press Start 2P', monospace;
+}
+
+/* Animated starfield background */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, .8) 0, transparent 100%),
+        radial-gradient(1px 1px at 40% 60%, rgba(255, 255, 255, .6) 0, transparent 100%),
+        radial-gradient(1px 1px at 70% 10%, rgba(255, 255, 255, .7) 0, transparent 100%),
+        radial-gradient(1px 1px at 90% 80%, rgba(255, 255, 255, .5) 0, transparent 100%),
+        radial-gradient(1px 1px at 25% 90%, rgba(255, 255, 255, .6) 0, transparent 100%),
+        radial-gradient(1px 1px at 55% 35%, rgba(255, 255, 255, .8) 0, transparent 100%),
+        radial-gradient(2px 2px at 80% 50%, rgba(255, 255, 255, .4) 0, transparent 100%),
+        radial-gradient(1px 1px at 15% 75%, rgba(255, 255, 255, .7) 0, transparent 100%);
+    animation: twinkle 4s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes twinkle {
+    from {
+        opacity: 0.5;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Glowing frame around the canvas */
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
+    image-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Customizer overlay */
+.customizer {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 100;
+    pointer-events: auto;
+}
+
+.customizer__toggle {
+    font-family: inherit;
+    font-size: 10px;
+    padding: 10px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+}
+
+.customizer__panel {
+    margin-top: 10px;
+    padding: 10px;
+    width: 240px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+}
+
+.customizer__action {
+    width: 100%;
+    font-family: inherit;
+    font-size: 10px;
+    padding: 10px 10px;
+    margin: 8px 0;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(10, 10, 26, 0.9);
+}
+
+.customizer__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.customizer__label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.customizer__select {
+    font-family: inherit;
+    font-size: 10px;
+    width: 120px;
+    padding: 6px 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(10, 10, 26, 0.9);
+    color: rgba(255, 255, 255, 0.95);
+}

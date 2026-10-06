@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sudoku: Roast Mode 🔥 - Get Roasted While You Solve!</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#e74c3c" />
+    <meta name="description" content="Comedy-driven Sudoku game with hilarious characters! Get roasted while solving puzzles. 60+ voice lines!" />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap');
+      
+      :root {
+        color-scheme: dark;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        font-family: 'Poppins', Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #app {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      canvas {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      /* Loading screen */
+      #loading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        z-index: 100;
+        transition: opacity 0.5s;
+      }
+
+      #loading.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .loading-container {
+        text-align: center;
+      }
+
+      .loading-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        font-size: 56px;
+        color: #ecf0f1;
+        text-shadow: 
+          4px 4px 0 #000000,
+          0 0 20px #e74c3c;
+        margin: 10px 0;
+        animation: title-glow 2s ease-in-out infinite;
+      }
+
+      @keyframes title-glow {
+        0%, 100% { text-shadow: 4px 4px 0 #000000, 0 0 20px #e74c3c; }
+        50% { text-shadow: 4px 4px 0 #000000, 0 0 40px #e74c3c; }
+      }
+
+      .loading-subtitle {
+        font-size: 32px;
+        font-weight: 800;
+        color: #e74c3c;
+        text-shadow: 3px 3px 0 #000000;
+        margin: 10px 0 20px 0;
+      }
+
+      .loading-emoji {
+        font-size: 80px;
+        animation: emoji-bounce 1s ease-in-out infinite;
+        margin: 20px 0;
+      }
+
+      @keyframes emoji-bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+      }
+
+      .loading-text {
+        font-size: 20px;
+        font-weight: 600;
+        color: #95a5a6;
+        margin-top: 20px;
+      }
+
+      .loading-dots::after {
+        content: '...';
+        animation: dots 1.5s steps(4, end) infinite;
+      }
+
+      @keyframes dots {
+        0%, 20% { content: '.'; }
+        40% { content: '..'; }
+        60%, 100% { content: '...'; }
+      }
+
+      /* Hide overlay on desktop (no touch controls needed for Sudoku) */
+      body.desktop #overlay {
+        display: none;
+      }
+
+      .loading-progress {
+        width: 300px;
+        height: 6px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        margin-top: 30px;
+        overflow: hidden;
+      }
+
+      .loading-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #e74c3c, #f39c12, #2ecc71);
+        animation: progress-fill 1.5s ease-in-out forwards;
+        border-radius: 10px;
+      }
+
+      @keyframes progress-fill {
+        from { width: 0%; }
+        to { width: 100%; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Loading Screen -->
+    <div id="loading">
+      <div class="loading-container">
+        <h1 class="loading-title">SUDOKU</h1>
+        <h2 class="loading-subtitle">ROAST MODE 🔥</h2>
+        <div class="loading-emoji">😂</div>
+        <div class="loading-text">Get ready to be roasted<span class="loading-dots"></span></div>
+        <div class="loading-progress">
+          <div class="loading-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="app"></div>
+
+    <!-- Ginix Arcade Bridge (must load before game) -->
+    <script src="../ginix-bridge.js"></script>
+
+    <!-- Phaser -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Game entry -->
+    <script type="module">
+      import { game } from './src/main.js'
+      
+      // Hide loading screen when game is ready
+      setTimeout(() => {
+        document.getElementById('loading').classList.add('hidden')
+      }, 1500)
+      
+      // Detect mobile vs desktop
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      document.body.classList.add(isMobile ? 'mobile' : 'desktop')
+    </script>
+  </body>
+</html>

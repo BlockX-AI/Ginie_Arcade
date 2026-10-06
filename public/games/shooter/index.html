@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Shooter</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --bg-dark: rgba(0, 0, 0, 0.3);
+      --game-width: calc(100vh * (9 / 16));
+      --boundary-width: calc(50% - ( 100vh * (9 / 16) ) / 2);
+    }
+
+    @keyframes flash {
+      0% {
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @font-face {
+      font-family: 'digital';
+      src:
+        url('fonts/digital-7_italic-webfont.woff2') format('woff2'),
+        url('fonts/digital-7_italic-webfont.woff') format('woff');
+      font-weight: normal;
+      font-style: italic;
+    }
+
+    @font-face {
+      font-family: 'digital';
+      src:
+        url('fonts/digital-7_mono-webfont.woff2') format('woff2'),
+        url('fonts/digital-7_mono-webfont.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    html, body {
+      position: fixed;
+      top: 0;
+      left: 0;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      font-family: 'digital', sans-serif;
+    }
+
+    body > canvas {
+      position: relative;
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .left-wing,
+    .right-wing {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      height: 100%;
+      background: var(--bg-dark);
+      background-size: cover;
+      width: var(--boundary-width);
+    }
+      @media (max-width: 769px) {
+        .left-wing,
+        .right-wing {
+          display: none;
+        }
+      }
+
+    .left-wing {
+      left: 0;
+      background-image: linear-gradient(to right, black, transparent);
+    }
+
+    .right-wing {
+      right: 0;
+      background-image: linear-gradient(to left, black, transparent);
+    }
+
+    .score-shadow,
+    .score {
+      position: absolute;
+      top: 0;
+      left: var(--boundary-width);
+      display: flex;
+      justify-content: space-between;
+      width: var(--game-width);
+      height: 6.8vh;
+      background: var(--bg-dark);
+      padding: 2vh;
+      font-size: 2.4vh;
+      line-height: 1;
+    }
+      @media (max-width: 769px) {
+        .score-shadow,
+        .score {
+          width: 100%;
+          left: 0;
+        }
+      }
+
+    .score {
+      z-index: 2;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .score__points {
+      font-size: 3vh;
+    }
+
+    .score-shadow {
+      z-index: 1;
+      color: rgba(255, 255, 255, 0.5);
+      text-shadow: 0 0 6px white;
+    }
+
+    .game-over {
+      transition: opacity 0.2s, transform 0.4s;
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: var(--boundary-width);
+      width: var(--game-width);
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 5vh;
+      text-align: center;
+      line-height: 100vh;
+      opacity: 0;
+      transform: scaleY(2);
+    }
+    @media (max-width: 769px) {
+      .game-over {
+        width: 100%;
+        left: 0;
+      }
+    }
+
+    .game-over.is-show {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+
+    .flash {
+      position: absolute;
+      top: 0;
+      z-index: 1;
+      right: var(--boundary-width);
+      bottom: 0;
+      left: var(--boundary-width);
+      display: none;
+      background: rgba(255, 255, 255, 0.5);
+    }
+    @media (max-width: 769px) {
+      .flash {
+        right: 0;
+        left: 0;
+      }
+    }
+
+    .flash.is-active {
+      display: block;
+      animation: flash 0.4s infinite linear;
+    }
+
+    .bonus-bar-wrapper {
+      position: absolute;
+      z-index: 1;
+      left: var(--boundary-width);
+      top: 6.8vh;
+      width: var(--game-width);
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    .bonus-bar {
+      transition: opacity 0.2s, transform 0.4s;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      background: var(--bg-dark);
+      color: white;
+      padding: 2vh;
+      font-size: 5vh;
+      font-style: italic;
+      opacity: 0;
+      transform: scaleX(2);
+    }
+
+      @media (max-width: 769px) {
+        .bonus-bar {
+          width: 100%;
+          left: 0;
+        }
+      }
+
+    .bonus-bar.is-active {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+
+    .bonus-bar__multiplier {
+      display: flex;
+      font-style: italic;
+    }
+
+    .bonus-bar__multiplier::before {
+      content: '*';
+      margin: 0 0.5em;
+      font-size: 4vh;
+    }
+  </style>
+</head>
+<body>
+  <div class="flash js-flash"></div>
+
+  <div class="score-shadow">
+    <div>Score: <span class="score__points">0000</span></div>
+    <div>Lives: <span class="score__points">0</span></div>
+    <div>Hi-score: <span class="score__points">0000</span></div>
+  </div>
+
+  <div class="score">
+    <div>Score: <span class="score__points js-score">0000</span></div>
+    <div>Lives: <span class="score__points js-lives">0</span></div>
+    <div>Hi-score: <span class="score__points js-hi-score">0000</span></div>
+  </div>
+  <div class="bonus-bar-wrapper">
+    <div class="bonus-bar js-bonus-bar">
+      <div class="bonus-bar__score">
+        <div class="js-last-score">13</div>
+      </div>
+
+      <div class="bonus-bar__multiplier">
+        <div class="js-score-multiplier">4</div>
+      </div>
+    </div>
+  </div>
+  <div class="game-over js-game-over">Game Over</div>
+  <div class="left-wing"></div>
+  <div class="right-wing"></div>
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/stats.min.js"></script>
+  <script src="/games/ginix-bridge.js"></script>
+  <script src="dist/main.js"></script>
+  <script src="js/ginix-tracker.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+packages/backend
+packages/contracts/node_modules
+packages/sdk
+infra/hardhat/node_modules
+_ginie_ref
+*.log

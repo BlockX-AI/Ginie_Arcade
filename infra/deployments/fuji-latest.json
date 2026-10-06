@@ -1,0 +1,22 @@
+{
+  "network": "fuji",
+  "chainId": "43113",
+  "deployer": "0x356435901c4bF97E2f695a4377087670201e5588",
+  "timestamp": "2026-01-26T17:53:57.439Z",
+  "contracts": {
+    "core": {
+      "GameRegistry": "0x11f41Ef35ecE2aC9F1AD429060989E7DDE23f589",
+      "GameCore": "0xeCa1F19cfbc4Fd9247e6F3E03C7C462AeC7A43f7",
+      "GameMemory": "0x9e1F450139292Bbb6404a39f985f98A68011EcE1",
+      "AntiCheatGuard": "0xdfD09cA7F6D199ccc0D0db717ccE7B365CB7A421",
+      "RewardEngine": "0x31aF2267857a3fe02F105ac2cCB71b7c4030F42B"
+    },
+    "tokens": {
+      "ArcadeToken": "0xe6aca73f2f2564006bA54E1452BD55e88A12029d",
+      "GameNFT": "0x46b510E7A089d8dbed37b945dC461936d4BDe944"
+    },
+    "games": {
+      "FlappyBird": "0x06Bd23B2627DC4d9CCe42a1cE37d59F885988EFc"
+    }
+  }
+}

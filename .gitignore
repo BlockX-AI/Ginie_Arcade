@@ -1,0 +1,46 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+.next
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.staging
+.env*.local
+
+# Large reference files (not needed for deploy)
+Ginie-repo.zip
+_ginie_ref/
+match-three-game-main/
+match-three-game-main.zip
+/*.zip
+/*.png
+.playwright-mcp/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vercel
+
+# Rust/Anchor build output (includes program keypairs — keep out of git)
+packages/solana-programs/target/
+temp-extract/

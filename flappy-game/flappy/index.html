@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird – Ginix Arcade</title>
+    <meta name="description"
+        content="Play Flappy Bird on Ginix Arcade! Tap to fly, dodge the pillars and beat your high score!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="css/site.css">
+    <script>
+        (function () {
+            const host = location.hostname
+            const isLocal = host === 'localhost' || host === '127.0.0.1' || host === '::1'
+            if (isLocal) return
+            const s = document.createElement('script')
+            s.src = '/games/ginix-bridge.js'
+            s.defer = true
+            document.head.appendChild(s)
+        })();
+    </script>
+</head>
+
+<body>
+    <div id="customizer" class="customizer" aria-label="Customizer">
+        <button id="customizer-toggle" class="customizer__toggle" type="button">Customize</button>
+        <div id="customizer-panel" class="customizer__panel" hidden>
+            <button id="bg-btn" class="customizer__action" type="button">Background</button>
+            <button id="bird-btn" class="customizer__action" type="button">Bird</button>
+            <button id="pipe-btn" class="customizer__action" type="button">Pipes</button>
+        </div>
+    </div>
+    <div id="game-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script src="js/game.js"></script>
+    <script>
+        (function () {
+            const toggleBtn = document.getElementById('customizer-toggle')
+            const panel = document.getElementById('customizer-panel')
+            const bgBtn = document.getElementById('bg-btn')
+            const birdBtn = document.getElementById('bird-btn')
+            const pipeBtn = document.getElementById('pipe-btn')
+
+            toggleBtn.addEventListener('click', () => {
+                panel.hidden = !panel.hidden
+            })
+
+            function tryInit() {
+                if (!window.FlappyCustomizer) return false
+
+                function cycleBackground() {
+                    const options = window.FlappyCustomizer.getBackgroundOptions()
+                    const current = window.FlappyCustomizer.getCurrentBackgroundIndex()
+                    const next = (Number(current) + 1) % options.length
+                    window.FlappyCustomizer.setBackgroundIndex(next)
+                }
+
+                function cycleBird() {
+                    const options = window.FlappyCustomizer.getBirdOptions()
+                    const currentKey = window.FlappyCustomizer.getCurrentBirdSkinKey()
+                    const i = Math.max(0, options.indexOf(currentKey))
+                    const nextKey = options[(i + 1) % options.length]
+                    window.FlappyCustomizer.setBirdSkinKey(nextKey)
+                }
+
+                function cyclePipe() {
+                    const options = window.FlappyCustomizer.getPipeOptions()
+                    const currentKey = window.FlappyCustomizer.getCurrentPipeKey()
+                    const i = Math.max(0, options.indexOf(currentKey))
+                    const nextKey = options[(i + 1) % options.length]
+                    window.FlappyCustomizer.setPipeKey(nextKey)
+                }
+
+                bgBtn.addEventListener('click', cycleBackground)
+                birdBtn.addEventListener('click', cycleBird)
+                pipeBtn.addEventListener('click', cyclePipe)
+
+                return true
+            }
+
+            const t = setInterval(() => {
+                if (tryInit()) clearInterval(t)
+            }, 50)
+        })();
+    </script>
+</body>
+
+</html>

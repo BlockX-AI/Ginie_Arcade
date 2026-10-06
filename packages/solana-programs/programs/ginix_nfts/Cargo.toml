@@ -1,0 +1,21 @@
+[package]
+name = "ginix_nfts"
+version = "0.1.0"
+description = "Ginix Arcade NFT achievements and badges"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "ginix_nfts"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.30.1"
+anchor-spl = { version = "0.30.1", features = ["metadata"] }
+solana-program = "1.18.26"
